@@ -1,11 +1,7 @@
-import "pixi-spine";
 import "./style.css";
-import { Application } from "pixi.js";
+import { Application, Assets } from "pixi.js";
 import { gameConfig } from "./gameConfig";
 import Game from "./Game";
-import { attachConsole } from "./utils/attach-console";
-
-// import { attachConsole } from "./utils/attach-console";
 
 declare const VERSION: string;
 console.log(`Welcome from Breakout. Pixi version:  ${VERSION}`);
@@ -23,14 +19,35 @@ window.onload = async (): Promise<void> => {
     app.stage.interactive = true;
 
     new Game(app);
-
-    if (VERSION.includes("d")) {
-        // if development version
-        attachConsole(app.stage, gameConfig.width, gameConfig.height);
-    }
 };
 
-async function loadGameAssets(): Promise<void> {}
+async function loadGameAssets(): Promise<void> {
+    const manifest = {
+        bundles: [
+            {
+                name: "pad",
+                assets: [
+                    {
+                        name: "pad",
+                        srcs: "./assets/pad.png",
+                    },
+                ],
+            },
+            {
+                name: "ball",
+                assets: [
+                    {
+                        name: "ball",
+                        srcs: "./assets/ball.png",
+                    },
+                ],
+            },
+        ],
+    };
+
+    await Assets.init({ manifest });
+    await Assets.loadBundle(["pad", "ball"]);
+}
 
 function resizeCanvas(): void {
     const resize = () => {
