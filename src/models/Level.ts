@@ -1,5 +1,6 @@
 import { Application, Graphics } from "pixi.js";
 import { Brick } from "./Brick";
+import { gameConfig } from "../gameConfig";
 
 export default class Level {
     public bricks: Array<Brick>;
@@ -25,7 +26,10 @@ export default class Level {
 
             const wb = new Graphics();
             wb.beginFill(0xfffff0);
-            wb.drawRect(b.x, b.y, b.width, b.height);
+            const offsetX = (gameConfig.width - b.width) / 6;
+            const offsetY = (gameConfig.height - b.height) / 120;
+
+            wb.drawRect(b.x + offsetX, b.y + offsetY, b.width, b.height);
 
             this.addBrick(wb);
             app.stage.addChild(wb);

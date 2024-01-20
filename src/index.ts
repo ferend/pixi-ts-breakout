@@ -1,3 +1,5 @@
+// @ts-ignore
+
 import "./style.css";
 import { Application, Assets } from "pixi.js";
 import { gameConfig } from "./gameConfig";
@@ -52,9 +54,9 @@ async function loadGameAssets(): Promise<void> {
 function resizeCanvas(): void {
     const resize = () => {
         app.renderer.resize(window.innerWidth, window.innerHeight);
+        app.stage.scale.x = window.innerWidth / gameConfig.width;
+        app.stage.scale.y = window.innerHeight / gameConfig.height;
     };
 
     resize();
-
-    window.addEventListener("resize", resize);
 }
