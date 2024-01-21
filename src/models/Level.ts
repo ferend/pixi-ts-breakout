@@ -1,11 +1,11 @@
-import { Application, Graphics } from "pixi.js";
+import { Application, Sprite, Texture } from "pixi.js";
 import { Brick } from "./Brick";
-import { gameConfig } from "../gameConfig";
 
 export default class Level {
     public bricks: Array<Brick>;
-
-    constructor() {
+    private app: Application;
+    constructor(app: Application) {
+        this.app = app;
         console.log("level loaded!");
         this.bricks = [];
     }
@@ -15,35 +15,37 @@ export default class Level {
         this.bricks = tmp.bricks;
     }
 
-    public createLevelBricks(app: Application) {
+    public createLevelBricks() {
         for (let i = 0, l = this.bricks.length; i < l; i++) {
             const b = this.bricks[i];
-            b.x = parseInt(String(b.x));
+            b.x = parseInt(String(b.x)) + 150;
             b.y = parseInt(String(b.y));
             b.width = parseInt(String(b.width));
             b.height = parseInt(String(b.height));
             b.score = parseInt(String(b.score));
 
-            const wb = new Graphics();
-            wb.beginFill(0xfffff0);
-            const offsetX = (gameConfig.width - b.width) / 6;
-            const offsetY = (gameConfig.height - b.height) / 120;
-
-            wb.drawRect(b.x + offsetX, b.y + offsetY, b.width, b.height);
+            const wb = new Sprite(Texture.from("pad"));
+            wb.x = b.x;
+            wb.y = b.y;
 
             this.addBrick(wb);
-            app.stage.addChild(wb);
+            this.app.stage.addChild(wb);
         }
     }
 
-    addBrick(spr: Graphics): Graphics {
+    public removeBrick(i: number): void {
+        this.app.stage.removeChild(this.bricks[i].sprite);
+        this.bricks.splice(i, 1);
+    }
+
+    addBrick(spr: Sprite): Sprite {
         this.bricks.push({
             x: spr.position.x,
             y: spr.position.y,
             width: spr.width,
             height: spr.height,
-            color: spr.fill,
             score: 10,
+            sprite: spr,
         });
         return spr;
     }
