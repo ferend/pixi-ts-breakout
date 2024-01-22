@@ -46,8 +46,7 @@ export default class Game {
             if (this.inputHandler.isMovingLeft && this.pad.x > this.gameWorld.leftBorder.width) {
                 this.pad.x -= Constants.speed;
             }
-            if (this.inputHandler.isMovingRight && this.pad.x + this.pad.width < this.gameWorld.rightBorder.width) {
-                // Move paddle to the right
+            if (this.inputHandler.isMovingRight && this.pad.x < gameConfig.width - 40 - this.pad.width / 2) {
                 this.pad.x += Constants.speed;
             }
 
