@@ -5,26 +5,32 @@ import Ball from "./models/Ball";
 import GameWorld from "./core/GameWorld";
 import { Constants } from "./helpers/Constants";
 import { gameConfig } from "./gameConfig";
-import InputHandler from "./core/InputHandler";
-import { ScoreText } from "./ui/scoreText";
+import InputController from "./controllers/InputController";
+import { ScoreText } from "./ui/ScoreText";
+import { StateController } from "./controllers/StateController";
+import { GameStates } from "./helpers/GameStates";
+import StartPanel from "./ui/StartPanel";
 export default class Game {
     app: Application;
     level: Level;
     private pad: PlayerPad;
     private ball: Ball;
     private gameWorld: GameWorld;
-    private inputHandler: InputHandler;
+    private inputHandler: InputController;
+    private stateController: StateController;
     private scoreText: ScoreText;
-
+    private startPanel: StartPanel;
     constructor(app: Application) {
         this.app = app;
-        this.inputHandler = new InputHandler();
+        this.stateController = new StateController();
+        this.inputHandler = new InputController();
         this.level = new Level(app);
         this.ball = new Ball(app);
         this.pad = new PlayerPad(app);
         this.gameWorld = new GameWorld(app);
         this.scoreText = new ScoreText(app);
         this.createLevel();
+        this.startPanel = new StartPanel(app, () => this.stateController.startGame());
         this.app.ticker.add(this.update.bind(this));
     }
 
@@ -34,21 +40,21 @@ export default class Game {
     }
 
     private update() {
-        if (this.pad === undefined) return;
+        if (this.stateController.currentState === GameStates.Playing) {
+            if (this.pad === undefined) return;
 
-        if (this.inputHandler.isMovingLeft && this.pad.x > this.gameWorld.leftBorder.width) {
-            this.pad.x -= Constants.speed;
-        }
-        if (
-            this.inputHandler.isMovingRight &&
-            this.pad.x < this.app.screen.width - this.gameWorld.rightBorder.width - this.pad.width - 640
-        ) {
-            this.pad.x += Constants.speed;
-        }
+            if (this.inputHandler.isMovingLeft && this.pad.x > this.gameWorld.leftBorder.width) {
+                this.pad.x -= Constants.speed;
+            }
+            if (this.inputHandler.isMovingRight && this.pad.x + this.pad.width < this.gameWorld.rightBorder.width) {
+                // Move paddle to the right
+                this.pad.x += Constants.speed;
+            }
 
-        this.CheckCollision();
-        this.ball.position.x += Constants.ballSpeedX;
-        this.ball.position.y += Constants.ballSpeedY;
+            this.CheckCollision();
+            this.ball.position.x += Constants.ballSpeedX;
+            this.ball.position.y += Constants.ballSpeedY;
+        }
     }
 
     private CheckCollision(): void {
@@ -73,7 +79,6 @@ export default class Game {
             Constants.ballSpeedX =
                 -(this.pad.position.x + this.pad.width / 2 - (this.ball.position.x + this.ball.width / 2)) / 4;
             collisionY = true;
-            console.log("Collision with pad");
         }
 
         for (let i = 0; i < this.level.bricks.length; i++) {
@@ -89,7 +94,6 @@ export default class Game {
             ) {
                 // Bottom Collision
                 collisionY = true;
-                console.log("Vertical hit with block " + i);
                 this.hitBrick(i);
             }
 
@@ -100,7 +104,6 @@ export default class Game {
             ) {
                 // Right or leftCollision
                 collisionX = true;
-                console.log("Horizontal hit with block " + i);
                 this.hitBrick(i);
             }
 
@@ -125,11 +128,14 @@ export default class Game {
         }
 
         if (bly >= gameConfig.height) {
-            console.log("lose life");
+            console.log("game over restart");
+            this.gameOverCheck();
+            this.restartGame();
         }
 
         if (this.level.bricks.length == 0) {
             console.log("no more brick");
+            this.gameOverCheck();
         }
 
         if (collisionX) {
@@ -141,13 +147,26 @@ export default class Game {
         }
     }
 
-    private hitBrick(i: number): void {
-        //score += bricks[i].score;
-        this.scoreColor(this.level.bricks[i].score);
-        this.level.removeBrick(i);
+    private gameOverCheck(): void {
+        this.stateController.gameOver();
     }
 
-    private scoreColor(points: number): void {
-        this.scoreText.score += points;
+    public restartGame(): void {
+        this.stateController.restartGame();
+        Constants.ballSpeedX = this.random(-5, 6); //random slope
+        Constants.ballSpeedY = -5;
+
+        this.pad.position.y = +600;
+
+        this.ball.position.y = this.pad.position.y + this.ball.height;
+        this.ball.position.x = this.pad.position.x + this.pad.width / 2 - this.ball.width / 2;
+    }
+    private random(min: number, max: number): number {
+        return Math.random() * (max - min) + min;
+    }
+
+    private hitBrick(i: number): void {
+        this.scoreText.score += this.level.bricks[i].score;
+        this.level.removeBrick(i);
     }
 }

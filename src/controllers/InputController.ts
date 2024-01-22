@@ -1,5 +1,4 @@
-
-export default class InputHandler {
+export default class InputController {
     isMovingLeft: boolean = false;
     isMovingRight: boolean = false;
 
