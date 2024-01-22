@@ -17,8 +17,17 @@ window.onload = async (): Promise<void> => {
     //@ts-expect-error
     document.body.appendChild(app.view);
 
-    resizeCanvas();
     app.stage.interactive = true;
+
+    window.addEventListener("orientationchange", () => {
+        resizeCanvas();
+    });
+
+    window.addEventListener("resize", () => {
+        resizeCanvas();
+    });
+
+    resizeCanvas();
 
     new Game(app);
 };

@@ -13,6 +13,7 @@ export default class StartPanel extends Graphics {
         this.endFill();
         this.createStartButton();
         this.createGameTitle();
+        this.createDescription();
         this.app.stage.addChild(this);
     }
 
@@ -40,8 +41,10 @@ export default class StartPanel extends Graphics {
     private createGameTitle(): void {
         const titleStyle = new TextStyle({
             fontFamily: "OverFont",
-            fontSize: 150,
+            fontSize: 200,
             fill: "pink",
+            dropShadow: true,
+            dropShadowDistance: 11,
         });
 
         const gameTitle = new Text("Breakout", titleStyle);
@@ -49,5 +52,19 @@ export default class StartPanel extends Graphics {
         gameTitle.anchor.set(0.5);
         gameTitle.position.set(this.width + 20, this.height - 50);
         this.addChild(gameTitle);
+    }
+
+    private createDescription(): void {
+        const titleStyle = new TextStyle({
+            fontFamily: "OverFont",
+            fontSize: 60,
+            fill: "pink",
+            align: "center",
+        });
+
+        const description = new Text("Arrow Keys or click left and \nright of screen to Play", titleStyle);
+        description.anchor.set(0.5);
+        description.position.set(this.width + 10, this.height - 150);
+        this.addChild(description);
     }
 }
