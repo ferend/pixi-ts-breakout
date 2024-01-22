@@ -25,6 +25,7 @@
     "author": "ferend",
     "dependencies": {
         "core-js": "^3.34.0",
+        "gsap": "^3.12.5",
         "pixi-console": "^4.0.0",
         "pixi-spine": "^4.0.4",
         "pixi.js": "^7.3.2"

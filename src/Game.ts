@@ -6,6 +6,7 @@ import GameWorld from "./core/GameWorld";
 import { Constants } from "./helpers/Constants";
 import { gameConfig } from "./gameConfig";
 import InputHandler from "./core/InputHandler";
+import { ScoreText } from "./ui/scoreText";
 export default class Game {
     app: Application;
     level: Level;
@@ -13,6 +14,7 @@ export default class Game {
     private ball: Ball;
     private gameWorld: GameWorld;
     private inputHandler: InputHandler;
+    private scoreText: ScoreText;
 
     constructor(app: Application) {
         this.app = app;
@@ -21,6 +23,7 @@ export default class Game {
         this.ball = new Ball(app);
         this.pad = new PlayerPad(app);
         this.gameWorld = new GameWorld(app);
+        this.scoreText = new ScoreText(app);
         this.createLevel();
         this.app.ticker.add(this.update.bind(this));
     }
@@ -140,12 +143,11 @@ export default class Game {
 
     private hitBrick(i: number): void {
         //score += bricks[i].score;
-        //document.getElementById("score")!.innerHTML = score + "<span id=addPoints> +" + bricks[i].score + "</span>";
         this.scoreColor(this.level.bricks[i].score);
         this.level.removeBrick(i);
     }
 
     private scoreColor(points: number): void {
-        console.log("+" + points + " points");
+        this.scoreText.score += points;
     }
 }

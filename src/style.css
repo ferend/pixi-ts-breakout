@@ -15,3 +15,11 @@ body {
 canvas {
     height: 100%;
 }
+@font-face {
+    font-family: 'OverFont';
+    src: url('../assets/game_over.otf') format('opentype');
+}
+
+body {
+    font-family: 'OverFont', sans-serif;
+}
